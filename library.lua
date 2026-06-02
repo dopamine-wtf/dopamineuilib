@@ -234,7 +234,7 @@ local Library do
             ["Text"] = FromRGB(235, 235, 235),
             ["Text Stroke"] = FromRGB(0, 0, 0),
             ["Placeholder Text"] = FromRGB(185, 185, 185),
-            ["Accent"] = FromRGB(255, 80, 80)
+            ["Accent"] = FromRGB(0, 191, 255)
         }
     }
 
