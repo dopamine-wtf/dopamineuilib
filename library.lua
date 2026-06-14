@@ -778,56 +778,6 @@ local Library do
         ResetOnSpawn = false
     })
 
-	local SnowHolder = Instance.new("Frame")
-SnowHolder.Name = "\0"
-SnowHolder.BackgroundTransparency = 1
-SnowHolder.Size = UDim2.new(1,0,1,0)
-SnowHolder.Parent = Library.Holder.Instance
-SnowHolder.ZIndex = 999
-
-local Snowflakes = {}
-local SnowEnabled = false
-
-local function makeflake()
-    local f = Instance.new("Frame")
-    f.Size = UDim2.new(0, math.random(2,4), 0, math.random(2,4))
-    f.Position = UDim2.new(math.random(),0,-0.1,0)
-    f.BackgroundColor3 = Color3.new(1,1,1)
-    f.BorderSizePixel = 0
-    f.Parent = SnowHolder
-    f.ZIndex = 999
-
-    Snowflakes[f] = {
-        speed = math.random(40,90)/100,
-        sway = math.random(-20,20)/100
-    }
-end
-
-for i = 1, 60 do
-    makeflake()
-end
-
-RunService.RenderStepped:Connect(function(dt)
-    if not SnowEnabled then
-        SnowHolder.Visible = false
-        return
-    end
-
-    SnowHolder.Visible = true
-
-    for f,data in Snowflakes do
-        local pos = f.Position
-        local x = pos.X.Scale + data.sway * dt
-        local y = pos.Y.Scale + data.speed * dt
-
-        if y > 1 then
-            f.Position = UDim2.new(math.random(),0,-0.1,0)
-        else
-            f.Position = UDim2.new(x,0,y,0)
-        end
-    end
-end)
-
     Library.UnusedHolder = Instances:Create("ScreenGui", {
         Parent = gethui(),
         Name = "\0",
