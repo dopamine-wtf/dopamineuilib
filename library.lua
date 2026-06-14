@@ -6380,29 +6380,6 @@ local Library do
         return BlankElement, Items
     end
 
-    Library.CreateSettingsPage = function(self, Window, Watermark, KeybindList)
-        local SettingsPage = Window:Page({Name = "Settings", SubPages = true}) do 
-            local ThemingSubPage = SettingsPage:SubPage({Name = "Theming", Columns = 2}) do 
-                local ThemesSection = ThemingSubPage:Section({Name = "Themes", Side = 1}) do
-                    for Index, Value in Library.Theme do 
-                        ThemesSection:Label(Index):Colorpicker({
-                            Name = Index,
-                            Flag = Index.."Theme",
-                            Default = Value,
-                            Callback = function(Value)
-                                Library.Theme[Index] = Value
-                                Library:ChangeTheme(Index, Value)
-                            end
-                        })
-                    end
-                end
-            end
-
-            local ConfigsSubPage = SettingsPage:SubPage({Name = "Configs", Columns = 2}) do 
-                local ConfigsSection = ConfigsSubPage:Section({Name = "Configs", Side = 1}) do
-                    local ConfigName
-                    local ConfigSelected
-
                     local ConfigsSearchbox = ConfigsSection:Searchbox({
                         Name = "SearchboxConfigs",
                         Flag = "ConfigsSearchobx",
@@ -6471,91 +6448,6 @@ local Library do
                     Library:RefreshConfigsList(ConfigsSearchbox)
                 end
             end
-
-            local SettingsSubPage = SettingsPage:SubPage({Name = "Settings", Columns = 2}) do 
-                local SettingsSection = SettingsSubPage:Section({Name = "Settings", Side = 1}) do
-                    SettingsSection:Toggle({
-                        Name = "Watermark",
-                        Flag = "Watermark",
-                        Default = true,
-                        Callback = function(Value)
-                            Watermark:SetVisibility(Value)
-                        end
-                    })
-
-                    SettingsSection:Toggle({
-                        Name = "Keybind list",
-                        Flag = "Keybind list",
-                        Default = true,
-                        Callback = function(Value)
-                            KeybindList:SetVisibility(Value)
-                        end
-                    })
-
-                    SettingsSection:Slider({
-                        Name = "Fade time",
-                        Flag = "FadeTime",
-                        Default = Library.FadeSpeed,
-                        Min = 0,
-                        Max = 1,
-                        Decimals = 0.01,
-                        Callback = function(Value)
-                            Library.FadeSpeed = Value
-                        end
-                    })
-
-                    SettingsSection:Slider({
-                        Name = "Tween time",
-                        Flag = "TweenTime",
-                        Default = Library.Tween.Time,
-                        Min = 0,
-                        Max = 1,
-                        Decimals = 0.01,
-                        Callback = function(Value)
-                            Library.Tween.Time = Value
-                        end
-                    })
-
-                    SettingsSection:Dropdown({
-                        Name = "Tween style",
-                        Flag = "Tween style",
-                        Items = { "Linear", "Quad", "Quart", "Back", "Bounce", "Circular", "Cubic", "Elastic", "Exponential", "Sine", "Quint" },
-                        Default = "Cubic",
-                        Callback = function(Value)
-                            Library.Tween.Style = Enum.EasingStyle[Value]
-                        end
-                    })
-
-                    SettingsSection:Dropdown({
-                        Name = "Tween direction",
-                        Flag = "Tween direction",
-                        Items = { "In", "Out", "InOut" },
-                        Default = "Out",
-                        Callback = function(Value)
-                            Library.Tween.Direction = Enum.EasingDirection[Value]
-                        end
-                    })
-
-                    SettingsSection:Button():Add("Unload", function()
-                        Library:Unload()
-                    end)
-
-                    SettingsSection:Label("UI Keybind"):Keybind({
-                        Name = "Menu keybind",
-                        Flag = "UIKeybind",
-                        Default = Library.MenuKeybind,
-                        Mode = "Toggle",
-                        Callback = function()
-                            Library.MenuKeybind = Library.Flags["UIKeybind"].Key
-                        end
-                    })
-                end
-            end
-        end
-        
-        return SettingsPage
-    end
-end
 
 getgenv().Library = Library
 return Library
