@@ -1,4 +1,66 @@
+local LoadingScreen = {}
+do
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "LoadingScreen"
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    ScreenGui.ResetOnSpawn = false
+    ScreenGui.Parent = gethui and gethui() or game:GetService("CoreGui")
 
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
+    MainFrame.Size = UDim2.new(1, 0, 1, 0)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    MainFrame.BackgroundTransparency = 0.5
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Parent = ScreenGui
+
+    local LoadingText = Instance.new("TextLabel")
+    LoadingText.Name = "LoadingText"
+    LoadingText.Size = UDim2.new(0, 200, 0, 50)
+    LoadingText.Position = UDim2.new(0.5, -100, 0.5, -25)
+    LoadingText.AnchorPoint = Vector2.new(0.5, 0.5)
+    LoadingText.BackgroundTransparency = 1
+    LoadingText.BorderSizePixel = 0
+    LoadingText.Text = "Loading..."
+    LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
+    LoadingText.TextSize = 30
+    LoadingText.TextScaled = true
+    LoadingText.Font = Enum.Font.GothamBold
+    LoadingText.TextTransparency = 1 
+    LoadingText.Parent = MainFrame
+
+    function LoadingScreen:FadeIn()
+        local TweenService = game:GetService("TweenService")
+        
+        local FadeInTween = TweenService:Create(LoadingText, 
+            TweenInfo.new(0.7, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
+            {TextTransparency = 0}
+        )
+        FadeInTween:Play()
+        FadeInTween.Completed:Wait()
+        
+        task.wait(0.5)
+        
+        local FadeOutTween = TweenService:Create(LoadingText,
+            TweenInfo.new(0.7, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
+            {TextTransparency = 1}
+        )
+        FadeOutTween:Play()
+        FadeOutTween.Completed:Wait()
+    end
+
+    function LoadingScreen:Remove()
+        if ScreenGui then
+            ScreenGui:Destroy()
+        end
+        LoadingScreen = nil
+    end
+end
+
+coroutine.wrap(function()
+    LoadingScreen:FadeIn()
+		
+end)()
 
 if Library then
     Library:Unload()
