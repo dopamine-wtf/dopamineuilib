@@ -1,12 +1,15 @@
 local LoadTick = tick()
 local StopLoading = false
+local MessageBox
+local ShowWarning = false
 
 do
-    local Success, MessageBox = pcall(function()
+    local Success, MB = pcall(function()
         return loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/NotificationGUI/main/source.lua"))()
     end)
 
     if Success then
+        MessageBox = MB
         local ExecutorName = ""
         pcall(function() ExecutorName = identifyexecutor() end)
         local NameLower = ExecutorName:lower()
@@ -26,13 +29,7 @@ do
             })
             StopLoading = true
         elseif IsReal or IsVelocity then
-            MessageBox.Show({
-                Position = UDim2.new(0.5, 0, 0.5, 0),
-                Text = "Executor Warning",
-                Description = "Your Executor Is Supported Although You May Experience Lag Or May Be Detected!",
-                MessageBoxIcon = "Warning",
-                MessageBoxButtons = "OK",
-            })
+            ShowWarning = true
         end
     end
 end
@@ -133,6 +130,17 @@ do
 
     RainbowConnection:Disconnect()
     LoadingGui:Destroy()
+end
+
+task.wait(0.2)
+if ShowWarning and MessageBox then
+    MessageBox.Show({
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Text = "Executor Warning",
+        Description = "Your Executor Is Supported Although You May Experience Lag Or May Be Detected!",
+        MessageBoxIcon = "Warning",
+        MessageBoxButtons = "OK",
+    })
 end
 
 local Library do
