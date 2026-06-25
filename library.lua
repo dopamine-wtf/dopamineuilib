@@ -1,7 +1,12 @@
 local LoadTick = os.clock()
 
 do
+    if getgenv().Library then
+        getgenv().Library:Unload()
+    end
+
     local TweenService = game:GetService("TweenService")
+    local RunService = game:GetService("RunService")
     local CoreGui = cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
 
     local LoadingGui = Instance.new("ScreenGui")
@@ -26,29 +31,56 @@ do
     LoadingText.Size = UDim2.new(1, 0, 0, 50)
     LoadingText.Position = UDim2.new(0, 0, 0.5, -25)
     LoadingText.BackgroundTransparency = 1
-    LoadingText.Text = "Loading..."
+    LoadingText.Text = "Bypassing..."
     LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
     LoadingText.TextSize = 30
     LoadingText.Font = Enum.Font.GothamBold
     LoadingText.TextTransparency = 1
     LoadingText.BorderSizePixel = 0
 
-    local FadeIn = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 0.5})
+    local CreditText = Instance.new("TextLabel")
+    CreditText.Name = "\0"
+    CreditText.Parent = LoadingGui
+    CreditText.Size = UDim2.new(1, 0, 0, 30)
+    CreditText.Position = UDim2.new(0, 0, 1, -40)
+    CreditText.BackgroundTransparency = 1
+    CreditText.Text = "made possible by: soryxen"
+    CreditText.TextSize = 16
+    CreditText.Font = Enum.Font.Gotham
+    CreditText.TextTransparency = 1
+    CreditText.BorderSizePixel = 0
+    CreditText.RichText = true
+    CreditText.TextXAlignment = Enum.TextXAlignment.Center
+
+    local Hue = 0
+    local RainbowConnection = RunService.RenderStepped:Connect(function()
+        Hue = (Hue + 0.01) % 1
+        CreditText.TextColor3 = Color3.fromHSV(Hue, 1, 1)
+    end)
+
+    local Duration = math.random(410, 580) / 100
+    local FadeIn = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 0.35})
     local TextFadeIn = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 0})
+    local CreditFadeIn = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 0})
 
     FadeIn:Play()
     TextFadeIn:Play()
+    CreditFadeIn:Play()
 
     FadeIn.Completed:Wait()
+    task.wait(Duration - 1.4)
 
     local FadeOut = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 1})
     local TextFadeOut = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 1})
+    local CreditFadeOut = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 1})
 
     FadeOut:Play()
     TextFadeOut:Play()
+    CreditFadeOut:Play()
 
     FadeOut.Completed:Wait()
 
+    RainbowConnection:Disconnect()
     LoadingGui:Destroy()
 end
 
