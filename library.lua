@@ -1,6 +1,6 @@
 local LoadTick = os.clock()
 
-local LoadingSuccess, LoadingError = pcall(function()
+do
     local OldLib = pcall(function() return getgenv().Library end) and getgenv().Library
     if OldLib then
         pcall(function() OldLib:Unload() end)
@@ -95,7 +95,7 @@ local LoadingSuccess, LoadingError = pcall(function()
         TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
     end
 
-    FadeIn.Completed:Wait()
+    task.wait(0.7)
 
     BobConnection = RunService.RenderStepped:Connect(function()
         BobTime = BobTime + 0.02
@@ -118,14 +118,10 @@ local LoadingSuccess, LoadingError = pcall(function()
         TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 1}):Play()
     end
 
-    FadeOut.Completed:Wait()
+    task.wait(0.7)
 
     RainbowConnection:Disconnect()
     LoadingGui:Destroy()
-end)
-
-if not LoadingSuccess then
-    warn("[Dopamine] Loading screen skipped:", LoadingError)
 end
 
 local Library do
