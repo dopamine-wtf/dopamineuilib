@@ -41,7 +41,7 @@ local LoadingSuccess, LoadingError = pcall(function()
     LoadingText.Text = "Bypassing..."
     LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
     LoadingText.TextSize = 30
-    LoadingText.Font = Enum.Font.GothamBold
+    LoadingText.Font = isfile("dopamine/Assets/PressStart2P.json") and Font.new(getcustomasset("dopamine/Assets/PressStart2P.json")) or Enum.Font.GothamBold
     LoadingText.TextTransparency = 1
     LoadingText.BorderSizePixel = 0
 
@@ -53,7 +53,7 @@ local LoadingSuccess, LoadingError = pcall(function()
     CreditText.BackgroundTransparency = 1
     CreditText.Text = "made possible by: soryxen"
     CreditText.TextSize = 16
-    CreditText.Font = Enum.Font.GothamBold
+    CreditText.Font = isfile("dopamine/Assets/PressStart2P.json") and Font.new(getcustomasset("dopamine/Assets/PressStart2P.json")) or Enum.Font.GothamBold
     CreditText.TextTransparency = 1
     CreditText.BorderSizePixel = 0
     CreditText.RichText = true
@@ -821,7 +821,42 @@ local Library do
         end
     end
 
-    Library.Font = Enum.Font.GothamBold
+    local CustomFont = { } do
+        function CustomFont:New(Name, Weight, Style, Data)
+            if isfile(Library.Folders.Assets .. "/" .. Name .. ".json") then
+                return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
+            end
+
+            if not isfile(Library.Folders.Assets .. "/" .. Name .. ".ttf") then 
+                writefile(Library.Folders.Assets .. "/" .. Name .. ".ttf", game:HttpGet(Data.Url))
+            end
+
+            local FontData = {
+                name = Name,
+                faces = { {
+                    name = "Regular",
+                    weight = Weight,
+                    style = Style,
+                    assetId = getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".ttf")
+                } }
+            }
+
+            writefile(Library.Folders.Assets .. "/" .. Name .. ".json", HttpService:JSONEncode(FontData))
+            return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
+        end
+
+        function CustomFont:Get(Name)
+            if isfile(Library.Folders.Assets .. "/" .. Name .. ".json") then
+                return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
+            end
+        end
+
+        CustomFont:New("PressStart2P", 400, "Regular", {
+            Url = "https://github.com/google/fonts/raw/main/ofl/pressstart2p/PressStart2P-Regular.ttf"
+        })
+
+        Library.Font = CustomFont:Get("PressStart2P") or Enum.Font.GothamBold
+    end
 
     Library.Holder = Instances:Create("ScreenGui", {
         Parent = gethui(),
