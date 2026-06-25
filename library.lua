@@ -9,8 +9,8 @@ do
     local RunService = game:GetService("RunService")
     local CoreGui = cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
 
-    if not isfolder("dopamine/Assets") then
-        makefolder("dopamine/Assets")
+    if not isfolder("scoot/Assets") then
+        makefolder("scoot/Assets")
     end
 
     local LoadingGui = Instance.new("ScreenGui")
@@ -49,7 +49,7 @@ do
     LoadingText.Text = "Bypassing..."
     LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
     LoadingText.TextSize = 30
-    LoadingText.Font = Enum.Font.Pixel
+    LoadingText.Font = isfile("scoot/Assets/Monaco.json") and Font.new(getcustomasset("scoot/Assets/Monaco.json")) or Enum.Font.GothamBold
     LoadingText.TextTransparency = 1
     LoadingText.BorderSizePixel = 0
 
@@ -61,7 +61,7 @@ do
     CreditText.BackgroundTransparency = 1
     CreditText.Text = "made possible by: soryxen"
     CreditText.TextSize = 16
-    CreditText.Font = Enum.Font.Pixel
+    CreditText.Font = isfile("scoot/Assets/Monaco.json") and Font.new(getcustomasset("scoot/Assets/Monaco.json")) or Enum.Font.Gotham
     CreditText.TextTransparency = 1
     CreditText.BorderSizePixel = 0
     CreditText.RichText = true
@@ -170,9 +170,9 @@ local Library do
         FadeSpeed = 0.2,
 
         Folders = {
-            Directory = "dopamine",
-            Configs = "dopamine/Configs",
-            Assets = "dopamine/Assets",
+            Directory = "scoot",
+            Configs = "scoot/Configs",
+            Assets = "scoot/Assets",
         },
 
         Images = {
@@ -829,7 +829,43 @@ local Library do
         end
     end
 
-    Library.Font = Enum.Font.Pixel
+    -- Custom font
+    local CustomFont = { } do
+        function CustomFont:New(Name, Weight, Style, Data)
+            if isfile(Library.Folders.Assets .. "/" .. Name .. ".json") then
+                return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
+            end
+
+            if not isfile(Library.Folders.Assets .. "/" .. Name .. ".ttf") then 
+                writefile(Library.Folders.Assets .. "/" .. Name .. ".ttf", game:HttpGet(Data.Url))
+            end
+
+            local FontData = {
+                name = Name,
+                faces = { {
+                    name = "Regular",
+                    weight = Weight,
+                    style = Style,
+                    assetId = getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".ttf")
+                } }
+            }
+
+            writefile(Library.Folders.Assets .. "/" .. Name .. ".json", HttpService:JSONEncode(FontData))
+            return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
+        end
+
+        function CustomFont:Get(Name)
+            if isfile(Library.Folders.Assets .. "/" .. Name .. ".json") then
+                return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
+            end
+        end
+
+        CustomFont:New("Monaco", 400, "Regular", {
+            Url = "https://github.com/sametexe001/luas/raw/refs/heads/main/fonts/Monaco.ttf"
+        })
+
+        Library.Font = CustomFont:Get("Monaco")
+    end
 
     Library.Holder = Instances:Create("ScreenGui", {
         Parent = gethui(),
