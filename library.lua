@@ -1,4 +1,4 @@
-local LoadTick = os.clock()
+local LoadTick = tick()
 local StopLoading = false
 
 do
@@ -82,7 +82,7 @@ do
     BypassingText.Text = "Bypassing..."
     BypassingText.TextColor3 = Color3.fromRGB(0, 191, 255)
     BypassingText.TextSize = 30
-    BypassingText.Font = LoadingFont
+    pcall(function() BypassingText.Font = LoadingFont end)
     BypassingText.TextTransparency = 1
     BypassingText.BorderSizePixel = 0
 
