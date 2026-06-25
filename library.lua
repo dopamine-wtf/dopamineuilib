@@ -32,18 +32,36 @@ local LoadingSuccess, LoadingError = pcall(function()
     Overlay.BackgroundTransparency = 1
     Overlay.BorderSizePixel = 0
 
-    local LoadingText = Instance.new("TextLabel")
-    LoadingText.Name = "\0"
-    LoadingText.Parent = LoadingGui
-    LoadingText.Size = UDim2.new(1, 0, 0, 50)
-    LoadingText.Position = UDim2.new(0, 0, 0.5, -25)
-    LoadingText.BackgroundTransparency = 1
-    LoadingText.Text = "Bypassing..."
-    LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
-    LoadingText.TextSize = 30
-    LoadingText.Font = isfile("dopamine/Assets/PressStart2P.json") and Font.new(getcustomasset("dopamine/Assets/PressStart2P.json")) or Enum.Font.GothamBold
-    LoadingText.TextTransparency = 1
-    LoadingText.BorderSizePixel = 0
+    local LoadingFont = isfile("dopamine/Assets/Monaco.json") and Font.new(getcustomasset("dopamine/Assets/Monaco.json")) or Enum.Font.GothamBold
+
+    local LoadingTextHolder = Instance.new("Frame")
+    LoadingTextHolder.Name = "\0"
+    LoadingTextHolder.Parent = LoadingGui
+    LoadingTextHolder.Size = UDim2.new(0, 240, 0, 50)
+    LoadingTextHolder.Position = UDim2.new(0.5, -120, 0.5, -25)
+    LoadingTextHolder.BackgroundTransparency = 1
+    LoadingTextHolder.BorderSizePixel = 0
+
+    local LoadingChars = {}
+    local TextToShow = "Bypassing..."
+    local TotalWidth = 0
+    for i = 1, #TextToShow do
+        local Char = TextToShow:sub(i, i)
+        local Label = Instance.new("TextLabel")
+        Label.Name = "\0"
+        Label.Parent = LoadingTextHolder
+        Label.Size = UDim2.new(0, 20, 0, 50)
+        Label.Position = UDim2.new(0, TotalWidth, 0, 0)
+        Label.BackgroundTransparency = 1
+        Label.Text = Char
+        Label.TextColor3 = Color3.fromRGB(0, 191, 255)
+        Label.TextSize = 30
+        Label.Font = LoadingFont
+        Label.TextTransparency = 1
+        Label.BorderSizePixel = 0
+        LoadingChars[i] = Label
+        TotalWidth = TotalWidth + 20
+    end
 
     local CreditText = Instance.new("TextLabel")
     CreditText.Name = "\0"
@@ -53,7 +71,7 @@ local LoadingSuccess, LoadingError = pcall(function()
     CreditText.BackgroundTransparency = 1
     CreditText.Text = "made possible by: soryxen"
     CreditText.TextSize = 16
-    CreditText.Font = isfile("dopamine/Assets/PressStart2P.json") and Font.new(getcustomasset("dopamine/Assets/PressStart2P.json")) or Enum.Font.GothamBold
+    CreditText.Font = isfile("dopamine/Assets/Monaco.json") and Font.new(getcustomasset("dopamine/Assets/Monaco.json")) or Enum.Font.GothamBold
     CreditText.TextTransparency = 1
     CreditText.BorderSizePixel = 0
     CreditText.RichText = true
@@ -67,23 +85,38 @@ local LoadingSuccess, LoadingError = pcall(function()
 
     local Duration = math.random(410, 580) / 100
     local FadeIn = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 0.35})
-    local TextFadeIn = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 0})
     local CreditFadeIn = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 0})
+    local BobTime = 0
+    local BobConnection
 
     FadeIn:Play()
-    TextFadeIn:Play()
     CreditFadeIn:Play()
+    for _, Label in LoadingChars do
+        TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
+    end
 
     FadeIn.Completed:Wait()
+
+    BobConnection = RunService.RenderStepped:Connect(function()
+        BobTime = BobTime + 0.02
+        for i, Label in LoadingChars do
+            local Direction = (i % 2 == 1) and 1 or -1
+            Label.Position = UDim2.new(0, (i - 1) * 20, 0, math.sin(BobTime) * Direction * 6)
+        end
+    end)
+
     task.wait(Duration - 1.4)
 
+    BobConnection:Disconnect()
+
     local FadeOut = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 1})
-    local TextFadeOut = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 1})
     local CreditFadeOut = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 1})
 
     FadeOut:Play()
-    TextFadeOut:Play()
     CreditFadeOut:Play()
+    for _, Label in LoadingChars do
+        TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 1}):Play()
+    end
 
     FadeOut.Completed:Wait()
 
@@ -851,11 +884,11 @@ local Library do
             end
         end
 
-        CustomFont:New("PressStart2P", 400, "Regular", {
-            Url = "https://github.com/google/fonts/raw/main/ofl/pressstart2p/PressStart2P-Regular.ttf"
+        CustomFont:New("Monaco", 400, "Regular", {
+            Url = "https://github.com/sametexe001/luas/raw/refs/heads/main/fonts/Monaco.ttf"
         })
 
-        Library.Font = CustomFont:Get("PressStart2P") or Enum.Font.GothamBold
+        Library.Font = CustomFont:Get("Monaco") or Enum.Font.GothamBold
     end
 
     Library.Holder = Instances:Create("ScreenGui", {
