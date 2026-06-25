@@ -13,16 +13,6 @@ do
         makefolder("scoot/Assets")
     end
 
-    local ImageFile = "scoot/Assets/loaderImage.png"
-    if not isfile(ImageFile) then
-        local Success, Result = pcall(function()
-            return game:HttpGet("https://raw.githubusercontent.com/dopamine-wtf/loader/main/dopamine.png")
-        end)
-        if Success then
-            writefile(ImageFile, Result)
-        end
-    end
-
     local LoadingGui = Instance.new("ScreenGui")
     LoadingGui.Name = "\0"
     LoadingGui.Parent = CoreGui
@@ -39,16 +29,36 @@ do
     Overlay.BackgroundTransparency = 1
     Overlay.BorderSizePixel = 0
 
-    local LogoImage = Instance.new("ImageLabel")
-    LogoImage.Name = "\0"
-    LogoImage.Parent = LoadingGui
-    LogoImage.Size = UDim2.new(0, 128, 0, 128)
-    LogoImage.Position = UDim2.new(0.5, -64, 0.5, -110)
-    LogoImage.BackgroundTransparency = 1
-    LogoImage.Image = getcustomasset(ImageFile)
-    LogoImage.ImageTransparency = 1
-    LogoImage.BorderSizePixel = 0
-    LogoImage.ScaleType = Enum.ScaleType.Fit
+    local LogoImage
+    local HasLogo = false
+    local function TryLoadLogo()
+        local ImageFile = "scoot/Assets/loaderImage.png"
+        if not isfile(ImageFile) then
+            local Success, Result = pcall(function()
+                return game:HttpGet("https://raw.githubusercontent.com/dopamine-wtf/loader/main/dopamine.png")
+            end)
+            if Success and type(Result) == "string" and #Result > 100 then
+                writefile(ImageFile, Result)
+            end
+        end
+        if isfile(ImageFile) then
+            local Success, Asset = pcall(getcustomasset, ImageFile)
+            if Success then
+                LogoImage = Instance.new("ImageLabel")
+                LogoImage.Name = "\0"
+                LogoImage.Parent = LoadingGui
+                LogoImage.Size = UDim2.new(0, 128, 0, 128)
+                LogoImage.Position = UDim2.new(0.5, -64, 0.5, -110)
+                LogoImage.BackgroundTransparency = 1
+                LogoImage.Image = Asset
+                LogoImage.ImageTransparency = 1
+                LogoImage.BorderSizePixel = 0
+                LogoImage.ScaleType = Enum.ScaleType.Fit
+                HasLogo = true
+            end
+        end
+    end
+    TryLoadLogo()
 
     local LoadingText = Instance.new("TextLabel")
     LoadingText.Name = "\0"
@@ -86,12 +96,12 @@ do
     local Duration = math.random(410, 580) / 100
     local FadeIn = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 0.35})
     local TextFadeIn = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 0})
-    local LogoFadeIn = TweenService:Create(LogoImage, TweenInfo.new(0.7), {ImageTransparency = 0})
+    local LogoFadeIn = HasLogo and TweenService:Create(LogoImage, TweenInfo.new(0.7), {ImageTransparency = 0})
     local CreditFadeIn = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 0})
 
     FadeIn:Play()
     TextFadeIn:Play()
-    LogoFadeIn:Play()
+    if LogoFadeIn then LogoFadeIn:Play() end
     CreditFadeIn:Play()
 
     FadeIn.Completed:Wait()
@@ -99,12 +109,12 @@ do
 
     local FadeOut = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 1})
     local TextFadeOut = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 1})
-    local LogoFadeOut = TweenService:Create(LogoImage, TweenInfo.new(0.7), {ImageTransparency = 1})
+    local LogoFadeOut = HasLogo and TweenService:Create(LogoImage, TweenInfo.new(0.7), {ImageTransparency = 1})
     local CreditFadeOut = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 1})
 
     FadeOut:Play()
     TextFadeOut:Play()
-    LogoFadeOut:Play()
+    if LogoFadeOut then LogoFadeOut:Play() end
     CreditFadeOut:Play()
 
     FadeOut.Completed:Wait()
