@@ -94,7 +94,7 @@ do
     CreditText.BackgroundTransparency = 1
     CreditText.Text = "made possible by: soryxen"
     CreditText.TextSize = 16
-    CreditText.Font = isfile("dopamine/Assets/Monaco.json") and Font.new(getcustomasset("dopamine/Assets/Monaco.json")) or Enum.Font.GothamBold
+    CreditText.Font = LoadingFont
     CreditText.TextTransparency = 1
     CreditText.BorderSizePixel = 0
     CreditText.RichText = true
