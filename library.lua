@@ -1,4 +1,43 @@
 local LoadTick = os.clock()
+local StopLoading = false
+
+do
+    local Success, MessageBox = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/NotificationGUI/main/source.lua"))()
+    end)
+
+    if Success then
+        local ExecutorName = ""
+        pcall(function() ExecutorName = getexecutorname() end)
+        local NameLower = ExecutorName:lower()
+
+        local IsXeno = NameLower:find("xeno") ~= nil
+        local IsSolara = NameLower:find("solara") ~= nil
+        local IsReal = NameLower:find("real") ~= nil
+        local IsVelocity = NameLower:find("velocity") ~= nil
+
+        if IsXeno or IsSolara then
+            MessageBox.Show({
+                Position = UDim2.new(0.5, 0, 0.5, 0),
+                Text = "Unsupported Executor",
+                Description = "Your Executor Is Not Supported",
+                MessageBoxIcon = "Error",
+                MessageBoxButtons = "OK",
+            })
+            StopLoading = true
+        elseif IsReal or IsVelocity then
+            MessageBox.Show({
+                Position = UDim2.new(0.5, 0, 0.5, 0),
+                Text = "Executor Warning",
+                Description = "Your Executor Is Supported Although You May Experience Lag Or May Be Detected!",
+                MessageBoxIcon = "Warning",
+                MessageBoxButtons = "OK",
+            })
+        end
+    end
+end
+
+if StopLoading then return end
 
 do
     local OldLib = pcall(function() return getgenv().Library end) and getgenv().Library
@@ -34,34 +73,18 @@ do
 
     local LoadingFont = isfile("dopamine/Assets/Monaco.json") and Font.new(getcustomasset("dopamine/Assets/Monaco.json")) or Enum.Font.GothamBold
 
-    local LoadingTextHolder = Instance.new("Frame")
-    LoadingTextHolder.Name = "\0"
-    LoadingTextHolder.Parent = LoadingGui
-    LoadingTextHolder.Size = UDim2.new(0, 240, 0, 50)
-    LoadingTextHolder.Position = UDim2.new(0.5, -120, 0.5, -25)
-    LoadingTextHolder.BackgroundTransparency = 1
-    LoadingTextHolder.BorderSizePixel = 0
-
-    local LoadingChars = {}
-    local TextToShow = "Bypassing..."
-    local TotalWidth = 0
-    for i = 1, #TextToShow do
-        local Char = TextToShow:sub(i, i)
-        local Label = Instance.new("TextLabel")
-        Label.Name = "\0"
-        Label.Parent = LoadingTextHolder
-        Label.Size = UDim2.new(0, 20, 0, 50)
-        Label.Position = UDim2.new(0, TotalWidth, 0, 0)
-        Label.BackgroundTransparency = 1
-        Label.Text = Char
-        Label.TextColor3 = Color3.fromRGB(0, 191, 255)
-        Label.TextSize = 30
-        Label.Font = LoadingFont
-        Label.TextTransparency = 1
-        Label.BorderSizePixel = 0
-        LoadingChars[i] = Label
-        TotalWidth = TotalWidth + 20
-    end
+    local BypassingText = Instance.new("TextLabel")
+    BypassingText.Name = "\0"
+    BypassingText.Parent = LoadingGui
+    BypassingText.Size = UDim2.new(1, 0, 0, 50)
+    BypassingText.Position = UDim2.new(0, 0, 0.5, -25)
+    BypassingText.BackgroundTransparency = 1
+    BypassingText.Text = "Bypassing..."
+    BypassingText.TextColor3 = Color3.fromRGB(0, 191, 255)
+    BypassingText.TextSize = 30
+    BypassingText.Font = LoadingFont
+    BypassingText.TextTransparency = 1
+    BypassingText.BorderSizePixel = 0
 
     local CreditText = Instance.new("TextLabel")
     CreditText.Name = "\0"
@@ -85,38 +108,23 @@ do
 
     local Duration = math.random(410, 580) / 100
     local FadeIn = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 0.35})
+    local TextFadeIn = TweenService:Create(BypassingText, TweenInfo.new(0.7), {TextTransparency = 0})
     local CreditFadeIn = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 0})
-    local BobTime = 0
-    local BobConnection
 
     FadeIn:Play()
+    TextFadeIn:Play()
     CreditFadeIn:Play()
-    for _, Label in LoadingChars do
-        TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
-    end
 
     task.wait(0.7)
-
-    BobConnection = RunService.RenderStepped:Connect(function()
-        BobTime = BobTime + 0.005
-        for i, Label in LoadingChars do
-            local Direction = (i % 2 == 1) and 1 or -1
-            Label.Position = UDim2.new(0, (i - 1) * 20, 0, math.sin(BobTime) * Direction * 2)
-        end
-    end)
-
     task.wait(Duration - 1.4)
 
-    BobConnection:Disconnect()
-
     local FadeOut = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 1})
+    local TextFadeOut = TweenService:Create(BypassingText, TweenInfo.new(0.7), {TextTransparency = 1})
     local CreditFadeOut = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 1})
 
     FadeOut:Play()
+    TextFadeOut:Play()
     CreditFadeOut:Play()
-    for _, Label in LoadingChars do
-        TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 1}):Play()
-    end
 
     task.wait(0.7)
 
