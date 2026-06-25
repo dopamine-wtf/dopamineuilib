@@ -34,11 +34,22 @@ do
 
     local LoadingFont = isfile("dopamine/Assets/Monaco.json") and Font.new(getcustomasset("dopamine/Assets/Monaco.json")) or Enum.Font.GothamBold
 
+    local LogoImage = Instance.new("ImageLabel")
+    LogoImage.Name = "\0"
+    LogoImage.Parent = LoadingGui
+    LogoImage.Size = UDim2.new(0, 128, 0, 128)
+    LogoImage.Position = UDim2.new(0.5, -64, 0.5, -110)
+    LogoImage.BackgroundTransparency = 1
+    LogoImage.Image = "rbxassetid://132447680232071"
+    LogoImage.ImageTransparency = 1
+    LogoImage.BorderSizePixel = 0
+    LogoImage.ScaleType = Enum.ScaleType.Fit
+
     local LoadingTextHolder = Instance.new("Frame")
     LoadingTextHolder.Name = "\0"
     LoadingTextHolder.Parent = LoadingGui
     LoadingTextHolder.Size = UDim2.new(0, 240, 0, 50)
-    LoadingTextHolder.Position = UDim2.new(0.5, -120, 0.5, -25)
+    LoadingTextHolder.Position = UDim2.new(0.5, -120, 0.5, 30)
     LoadingTextHolder.BackgroundTransparency = 1
     LoadingTextHolder.BorderSizePixel = 0
 
@@ -91,6 +102,8 @@ do
 
     FadeIn:Play()
     CreditFadeIn:Play()
+    local LogoFadeIn = TweenService:Create(LogoImage, TweenInfo.new(0.7), {ImageTransparency = 0})
+    LogoFadeIn:Play()
     for _, Label in LoadingChars do
         TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
     end
@@ -98,10 +111,10 @@ do
     task.wait(0.7)
 
     BobConnection = RunService.RenderStepped:Connect(function()
-        BobTime = BobTime + 0.02
+        BobTime = BobTime + 0.005
         for i, Label in LoadingChars do
             local Direction = (i % 2 == 1) and 1 or -1
-            Label.Position = UDim2.new(0, (i - 1) * 20, 0, math.sin(BobTime) * Direction * 6)
+            Label.Position = UDim2.new(0, (i - 1) * 20, 0, math.sin(BobTime) * Direction * 2)
         end
     end)
 
@@ -111,9 +124,11 @@ do
 
     local FadeOut = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 1})
     local CreditFadeOut = TweenService:Create(CreditText, TweenInfo.new(0.7), {TextTransparency = 1})
+    local LogoFadeOut = TweenService:Create(LogoImage, TweenInfo.new(0.7), {ImageTransparency = 1})
 
     FadeOut:Play()
     CreditFadeOut:Play()
+    LogoFadeOut:Play()
     for _, Label in LoadingChars do
         TweenService:Create(Label, TweenInfo.new(0.7), {TextTransparency = 1}):Play()
     end
