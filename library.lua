@@ -15,7 +15,12 @@ do
 
     local ImageFile = "scoot/Assets/loaderImage.png"
     if not isfile(ImageFile) then
-        writefile(ImageFile, game:HttpGet("https://raw.githubusercontent.com/dopamine-wtf/loader/main/dopamine.png"))
+        local Success, Result = pcall(function()
+            return game:HttpGet("https://raw.githubusercontent.com/dopamine-wtf/loader/main/dopamine.png")
+        end)
+        if Success then
+            writefile(ImageFile, Result)
+        end
     end
 
     local LoadingGui = Instance.new("ScreenGui")
@@ -74,7 +79,7 @@ do
 
     local Hue = 0
     local RainbowConnection = RunService.RenderStepped:Connect(function()
-        Hue = (Hue + 0.002) % 1
+        Hue = (Hue + 0.0005) % 1
         CreditText.TextColor3 = Color3.fromHSV(Hue, 1, 1)
     end)
 
@@ -4880,6 +4885,7 @@ local Library do
 
     -- Library components
     Library.Watermark = function(self, Name)
+        Name = Name or "dopmaine.wtf | discord.gg/hZAj73bwnv"
         local Watermark = { }
 
         local Items = { } do 
@@ -5204,7 +5210,7 @@ local Library do
         Data = Data or { }
 
         local Window = { 
-            Logo = Data.Logo or Data.logo or "",
+            Logo = Data.Logo or Data.logo or "132447680232071",
             FadeTime = Data.FadeTime or Data.fadetime or 0.4,
             Size = Data.Size or Data.size or UDim2New(0, 751, 0, 539),
 
