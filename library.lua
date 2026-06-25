@@ -40,6 +40,11 @@ end
 if StopLoading then return end
 
 do
+    pcall(function() setfpscap(999) end)
+    pcall(function() task.desynchronize() end)
+end
+
+do
     local OldLib = pcall(function() return getgenv().Library end) and getgenv().Library
     if OldLib then
         pcall(function() OldLib:Unload() end)
