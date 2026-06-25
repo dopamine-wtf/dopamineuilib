@@ -8,7 +8,7 @@ do
 
     if Success then
         local ExecutorName = ""
-        pcall(function() ExecutorName = getexecutorname() end)
+        pcall(function() ExecutorName = identifyexecutor() end)
         local NameLower = ExecutorName:lower()
 
         local IsXeno = NameLower:find("xeno") ~= nil
@@ -71,8 +71,6 @@ do
     Overlay.BackgroundTransparency = 1
     Overlay.BorderSizePixel = 0
 
-    local LoadingFont = isfile("dopamine/Assets/Monaco.json") and Font.new(getcustomasset("dopamine/Assets/Monaco.json")) or Enum.Font.GothamBold
-
     local BypassingText = Instance.new("TextLabel")
     BypassingText.Name = "\0"
     BypassingText.Parent = LoadingGui
@@ -82,7 +80,7 @@ do
     BypassingText.Text = "Bypassing..."
     BypassingText.TextColor3 = Color3.fromRGB(0, 191, 255)
     BypassingText.TextSize = 30
-    pcall(function() BypassingText.Font = LoadingFont end)
+    BypassingText.Font = Enum.Font.GothamBold
     BypassingText.TextTransparency = 1
     BypassingText.BorderSizePixel = 0
 
@@ -94,7 +92,7 @@ do
     CreditText.BackgroundTransparency = 1
     CreditText.Text = "made possible by: soryxen"
     CreditText.TextSize = 16
-    CreditText.Font = LoadingFont
+    CreditText.Font = Enum.Font.GothamBold
     CreditText.TextTransparency = 1
     CreditText.BorderSizePixel = 0
     CreditText.RichText = true
