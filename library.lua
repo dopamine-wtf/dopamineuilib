@@ -1,5 +1,57 @@
 local LoadTick = os.clock()
 
+do
+    local TweenService = game:GetService("TweenService")
+    local CoreGui = cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
+
+    local LoadingGui = Instance.new("ScreenGui")
+    LoadingGui.Name = "\0"
+    LoadingGui.Parent = CoreGui
+    LoadingGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    LoadingGui.DisplayOrder = 9999
+    LoadingGui.IgnoreGuiInset = true
+
+    local Overlay = Instance.new("Frame")
+    Overlay.Name = "\0"
+    Overlay.Parent = LoadingGui
+    Overlay.Size = UDim2.new(2, 0, 2, 0)
+    Overlay.Position = UDim2.new(-0.5, 0, -0.5, 0)
+    Overlay.BackgroundColor3 = Color3.new(0, 0, 0)
+    Overlay.BackgroundTransparency = 1
+    Overlay.BorderSizePixel = 0
+
+    local LoadingText = Instance.new("TextLabel")
+    LoadingText.Name = "\0"
+    LoadingText.Parent = LoadingGui
+    LoadingText.Size = UDim2.new(1, 0, 0, 50)
+    LoadingText.Position = UDim2.new(0, 0, 0.5, -25)
+    LoadingText.BackgroundTransparency = 1
+    LoadingText.Text = "Loading..."
+    LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
+    LoadingText.TextSize = 30
+    LoadingText.Font = Enum.Font.GothamBold
+    LoadingText.TextTransparency = 1
+    LoadingText.BorderSizePixel = 0
+
+    local FadeIn = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 0.5})
+    local TextFadeIn = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 0})
+
+    FadeIn:Play()
+    TextFadeIn:Play()
+
+    FadeIn.Completed:Wait()
+
+    local FadeOut = TweenService:Create(Overlay, TweenInfo.new(0.7), {BackgroundTransparency = 1})
+    local TextFadeOut = TweenService:Create(LoadingText, TweenInfo.new(0.7), {TextTransparency = 1})
+
+    FadeOut:Play()
+    TextFadeOut:Play()
+
+    FadeOut.Completed:Wait()
+
+    LoadingGui:Destroy()
+end
+
 local Library do
     local Workspace = game:GetService("Workspace")
     local UserInputService = game:GetService("UserInputService")
