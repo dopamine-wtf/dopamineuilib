@@ -1,17 +1,20 @@
 local LoadTick = os.clock()
 
-do
-    if getgenv().Library then
-        getgenv().Library:Unload()
+local LoadingSuccess = pcall(function()
+    local OldLib = pcall(function() return getgenv().Library end) and getgenv().Library
+    if OldLib then
+        pcall(function() OldLib:Unload() end)
     end
 
     local TweenService = game:GetService("TweenService")
     local RunService = game:GetService("RunService")
     local CoreGui = cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
 
-    if not isfolder("scoot/Assets") then
-        makefolder("scoot/Assets")
-    end
+    pcall(function()
+        if not isfolder("dopamine/Assets") then
+            makefolder("dopamine/Assets")
+        end
+    end)
 
     local LoadingGui = Instance.new("ScreenGui")
     LoadingGui.Name = "\0"
@@ -49,7 +52,7 @@ do
     LoadingText.Text = "Bypassing..."
     LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
     LoadingText.TextSize = 30
-    LoadingText.Font = isfile("scoot/Assets/Monaco.json") and Font.new(getcustomasset("scoot/Assets/Monaco.json")) or Enum.Font.GothamBold
+    LoadingText.Font = Enum.Font.Pixel
     LoadingText.TextTransparency = 1
     LoadingText.BorderSizePixel = 0
 
@@ -61,7 +64,7 @@ do
     CreditText.BackgroundTransparency = 1
     CreditText.Text = "made possible by: soryxen"
     CreditText.TextSize = 16
-    CreditText.Font = isfile("scoot/Assets/Monaco.json") and Font.new(getcustomasset("scoot/Assets/Monaco.json")) or Enum.Font.Gotham
+    CreditText.Font = Enum.Font.Pixel
     CreditText.TextTransparency = 1
     CreditText.BorderSizePixel = 0
     CreditText.RichText = true
@@ -101,7 +104,7 @@ do
 
     RainbowConnection:Disconnect()
     LoadingGui:Destroy()
-end
+end)
 
 local Library do
     local Workspace = game:GetService("Workspace")
@@ -170,9 +173,9 @@ local Library do
         FadeSpeed = 0.2,
 
         Folders = {
-            Directory = "scoot",
-            Configs = "scoot/Configs",
-            Assets = "scoot/Assets",
+            Directory = "dopamine",
+            Configs = "dopamine/Configs",
+            Assets = "dopamine/Assets",
         },
 
         Images = {
@@ -829,43 +832,7 @@ local Library do
         end
     end
 
-    -- Custom font
-    local CustomFont = { } do
-        function CustomFont:New(Name, Weight, Style, Data)
-            if isfile(Library.Folders.Assets .. "/" .. Name .. ".json") then
-                return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
-            end
-
-            if not isfile(Library.Folders.Assets .. "/" .. Name .. ".ttf") then 
-                writefile(Library.Folders.Assets .. "/" .. Name .. ".ttf", game:HttpGet(Data.Url))
-            end
-
-            local FontData = {
-                name = Name,
-                faces = { {
-                    name = "Regular",
-                    weight = Weight,
-                    style = Style,
-                    assetId = getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".ttf")
-                } }
-            }
-
-            writefile(Library.Folders.Assets .. "/" .. Name .. ".json", HttpService:JSONEncode(FontData))
-            return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
-        end
-
-        function CustomFont:Get(Name)
-            if isfile(Library.Folders.Assets .. "/" .. Name .. ".json") then
-                return Font.new(getcustomasset(Library.Folders.Assets .. "/" .. Name .. ".json"))
-            end
-        end
-
-        CustomFont:New("Monaco", 400, "Regular", {
-            Url = "https://github.com/sametexe001/luas/raw/refs/heads/main/fonts/Monaco.ttf"
-        })
-
-        Library.Font = CustomFont:Get("Monaco")
-    end
+    Library.Font = Enum.Font.Pixel
 
     Library.Holder = Instances:Create("ScreenGui", {
         Parent = gethui(),
@@ -912,22 +879,20 @@ local Library do
     })
 
     Library.Unload = function(self)
-        for Index, Value in self.Connections do 
-            Value.Connection:Disconnect()
-        end
-
-        for Index, Value in self.Threads do 
-            coroutine.close(Value)
-        end
-
-        if self.Holder then 
-            self.Holder:Clean()
-        end
-
-        Library = nil 
-        getgenv().Library = nil
-
-        UserInputService.MouseIconEnabled = true
+        pcall(function()
+            for Index, Value in self.Connections do
+                pcall(function() Value.Connection:Disconnect() end)
+            end
+            for Index, Value in self.Threads do
+                pcall(function() coroutine.close(Value) end)
+            end
+            if self.Holder then
+                pcall(function() self.Holder:Clean() end)
+            end
+        end)
+        Library = nil
+        pcall(function() getgenv().Library = nil end)
+        pcall(function() UserInputService.MouseIconEnabled = true end)
     end
 
     Library.GetImage = function(self, Image)
