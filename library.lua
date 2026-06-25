@@ -52,7 +52,7 @@ local LoadingSuccess = pcall(function()
     LoadingText.Text = "Bypassing..."
     LoadingText.TextColor3 = Color3.fromRGB(0, 191, 255)
     LoadingText.TextSize = 30
-    LoadingText.Font = Enum.Font.Pixel
+    LoadingText.Font = Enum.Font.GothamBold
     LoadingText.TextTransparency = 1
     LoadingText.BorderSizePixel = 0
 
@@ -64,7 +64,7 @@ local LoadingSuccess = pcall(function()
     CreditText.BackgroundTransparency = 1
     CreditText.Text = "made possible by: soryxen"
     CreditText.TextSize = 16
-    CreditText.Font = Enum.Font.Pixel
+    CreditText.Font = Enum.Font.GothamBold
     CreditText.TextTransparency = 1
     CreditText.BorderSizePixel = 0
     CreditText.RichText = true
@@ -832,7 +832,7 @@ local Library do
         end
     end
 
-    Library.Font = Enum.Font.Pixel
+    Library.Font = Enum.Font.GothamBold
 
     Library.Holder = Instances:Create("ScreenGui", {
         Parent = gethui(),
