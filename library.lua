@@ -14,12 +14,17 @@ do
         pcall(function() ExecutorName = identifyexecutor() end)
         local NameLower = ExecutorName:lower()
 
-        local IsXeno = NameLower:find("xeno") ~= nil
-        local IsSolara = NameLower:find("solara") ~= nil
-        local IsReal = NameLower:find("real") ~= nil
-        local IsVelocity = NameLower:find("velocity") ~= nil
+        local Unsupported = { "xeno", "solara", "macsploit" }
+        local Warning = { "bunni", "hydrogen", "medium", "real", "velocity" }
 
-        if IsXeno or IsSolara then
+        local function NameContains(list)
+            for _, name in list do
+                if NameLower:find(name) then return true end
+            end
+            return false
+        end
+
+        if NameContains(Unsupported) then
             MessageBox.Show({
                 Position = UDim2.new(0.5, 0, 0.5, 0),
                 Text = "dopamine.wtf",
@@ -28,7 +33,7 @@ do
                 MessageBoxButtons = "OK",
             })
             StopLoading = true
-        elseif IsReal or IsVelocity then
+        elseif NameContains(Warning) then
             ShowWarning = true
         end
     end
