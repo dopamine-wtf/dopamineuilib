@@ -14,8 +14,8 @@ do
         pcall(function() ExecutorName = identifyexecutor() end)
         local NameLower = ExecutorName:lower()
 
-        local Unsupported = { "xeno", "solara", "macsploit" }
-        local Warning = { "bunni", "hydrogen", "medium", "real", "velocity" }
+        local Unsupported = { "xeno", "solara" }
+        local Warning = { "bunni", "hydrogen", "macsploit", "medium", "real", "velocity" }
 
         local function NameContains(list)
             for _, name in list do
