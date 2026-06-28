@@ -927,19 +927,6 @@ local Library do
         ResetOnSpawn = false
     })
 
-    do
-        local Lighting = game:GetService("Lighting")
-        local existing = Lighting:FindFirstChild("ScreenBlur")
-        if existing then
-            existing:Destroy()
-        end
-        Library.BlurEffect = InstanceNew("BlurEffect")
-        Library.BlurEffect.Name = "ScreenBlur"
-        Library.BlurEffect.Size = 24
-        Library.BlurEffect.Enabled = false
-        Library.BlurEffect.Parent = Lighting
-    end
-
     Library.SnowHolder = Instances:Create("ScreenGui", {
         Parent = gethui(),
         Name = "\0",
@@ -1062,9 +1049,6 @@ local Library do
             end
             if self.Holder then
                 pcall(function() self.Holder:Clean() end)
-            end
-            if self.BlurEffect then
-                pcall(function() self.BlurEffect:Destroy() end)
             end
             self:StopSnow()
         end)
@@ -5590,7 +5574,6 @@ local Library do
 
             Window.IsOpen = Bool
 
-            Library.BlurEffect.Enabled = Bool
             if Bool then Library:StartSnow() else Library:StopSnow() end
 
             Debounce = true 
