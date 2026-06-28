@@ -961,7 +961,7 @@ local Library do
 
         for i = 1, SnowCount do
             local flake = InstanceNew("Frame")
-            flake.Size = UDim2New(0, 3, 0, 3)
+            flake.Size = UDim2New(0, 6, 0, 6)
             flake.BackgroundColor3 = Color3.new(1, 1, 1)
             flake.BackgroundTransparency = 0
             flake.BorderSizePixel = 0
@@ -1003,15 +1003,20 @@ local Library do
                     end
                     if newX > 1.1 then newX = -0.1 elseif newX < -0.1 then newX = 1.1 end
                     s.Frame.Position = UDim2.new(newX, 0, newY, 0)
+                    s.X = newX
+                    s.Y = newY
                 end
             end)
         end
 
         function Library:StopSnow()
-            SnowFrame.Visible = false
             for _, s in Snowflakes do
+                local pos = s.Frame.Position
+                s.X = pos.X.Scale
+                s.Y = pos.Y.Scale
                 s.Frame.Visible = false
             end
+            SnowFrame.Visible = false
             if SnowConnection then
                 SnowConnection:Disconnect()
                 SnowConnection = nil
