@@ -927,22 +927,10 @@ local Library do
         ResetOnSpawn = false
     })
 
-    Library.BlurHolder = Instances:Create("ScreenGui", {
-        Parent = gethui(),
-        Name = "\0",
-        ZIndexBehavior = Enum.ZIndexBehavior.Global,
-        DisplayOrder = 0,
-        ResetOnSpawn = false
-    })
-
-    Library.BlurFrame = Instances:Create("Frame", {
-        Parent = Library.BlurHolder.Instance,
-        Size = UDim2New(1, 0, 1, 0),
-        BackgroundColor3 = Color3.new(0, 0, 0),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        Visible = false
-    })
+    Library.BlurEffect = InstanceNew("BlurEffect")
+    Library.BlurEffect.Size = 24
+    Library.BlurEffect.Enabled = false
+    Library.BlurEffect.Parent = game:GetService("Lighting")
 
     Library.SnowHolder = Instances:Create("ScreenGui", {
         Parent = gethui(),
@@ -1062,6 +1050,10 @@ local Library do
             if self.Holder then
                 pcall(function() self.Holder:Clean() end)
             end
+            if self.BlurEffect then
+                pcall(function() self.BlurEffect:Destroy() end)
+            end
+            self:StopSnow()
         end)
         Library = nil
         pcall(function() getgenv().Library = nil end)
@@ -5585,7 +5577,7 @@ local Library do
 
             Window.IsOpen = Bool
 
-            Library.BlurFrame.Instance.Visible = Bool
+            Library.BlurEffect.Enabled = Bool
             if Bool then Library:StartSnow() else Library:StopSnow() end
 
             Debounce = true 
