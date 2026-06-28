@@ -927,6 +927,102 @@ local Library do
         ResetOnSpawn = false
     })
 
+    Library.BlurHolder = Instances:Create("ScreenGui", {
+        Parent = gethui(),
+        Name = "\0",
+        ZIndexBehavior = Enum.ZIndexBehavior.Global,
+        DisplayOrder = 0,
+        ResetOnSpawn = false
+    })
+
+    Library.BlurFrame = Instances:Create("Frame", {
+        Parent = Library.BlurHolder.Instance,
+        Size = UDim2New(1, 0, 1, 0),
+        BackgroundColor3 = Color3.new(0, 0, 0),
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        Visible = false
+    })
+
+    Library.SnowHolder = Instances:Create("ScreenGui", {
+        Parent = gethui(),
+        Name = "\0",
+        ZIndexBehavior = Enum.ZIndexBehavior.Global,
+        DisplayOrder = 1,
+        ResetOnSpawn = false
+    })
+
+    do
+        local SnowFrame = InstanceNew("Frame")
+        SnowFrame.Size = UDim2New(1, 0, 1, 0)
+        SnowFrame.BackgroundTransparency = 1
+        SnowFrame.BorderSizePixel = 0
+        SnowFrame.Parent = Library.SnowHolder.Instance
+        SnowFrame.Visible = false
+
+        local Snowflakes = {}
+        local SnowCount = 30
+
+        for i = 1, SnowCount do
+            local flake = InstanceNew("Frame")
+            flake.Size = UDim2New(0, 3, 0, 3)
+            flake.BackgroundColor3 = Color3.new(1, 1, 1)
+            flake.BackgroundTransparency = 0
+            flake.BorderSizePixel = 0
+            flake.Parent = SnowFrame
+            flake.Visible = false
+
+            local corner = InstanceNew("UICorner")
+            corner.CornerRadius = UDim.new(1, 0)
+            corner.Parent = flake
+
+            Snowflakes[i] = {
+                Frame = flake,
+                X = Random.new():NextNumber(0, 1),
+                Y = Random.new():NextNumber(-1, 0),
+                Speed = Random.new():NextNumber(0.2, 0.6),
+                Drift = Random.new():NextNumber(-0.15, 0.15),
+                Opacity = Random.new():NextNumber(0.3, 0.8)
+            }
+        end
+
+        local SnowConnection = nil
+
+        function Library:StartSnow()
+            SnowFrame.Visible = true
+            for _, s in Snowflakes do
+                s.Frame.Visible = true
+                s.Frame.Position = UDim2.new(s.X, 0, s.Y, 0)
+                s.Frame.BackgroundTransparency = 1 - s.Opacity
+            end
+            if SnowConnection then SnowConnection:Disconnect() end
+            SnowConnection = RunService.RenderStepped:Connect(function(dt)
+                for _, s in Snowflakes do
+                    local pos = s.Frame.Position
+                    local newY = pos.Y.Scale + s.Speed * dt * 0.25
+                    local newX = pos.X.Scale + s.Drift * dt * 0.08
+                    if newY > 1.1 then
+                        newY = -0.1
+                        newX = Random.new():NextNumber(0, 1)
+                    end
+                    if newX > 1.1 then newX = -0.1 elseif newX < -0.1 then newX = 1.1 end
+                    s.Frame.Position = UDim2.new(newX, 0, newY, 0)
+                end
+            end)
+        end
+
+        function Library:StopSnow()
+            SnowFrame.Visible = false
+            for _, s in Snowflakes do
+                s.Frame.Visible = false
+            end
+            if SnowConnection then
+                SnowConnection:Disconnect()
+                SnowConnection = nil
+            end
+        end
+    end
+
     Library.NotifHolder = Instances:Create("Frame", {
         Parent = Library.Holder.Instance,
         Name = "\0",
@@ -5489,6 +5585,9 @@ local Library do
 
             Window.IsOpen = Bool
 
+            Library.BlurFrame.Instance.Visible = Bool
+            if Bool then Library:StartSnow() else Library:StopSnow() end
+
             Debounce = true 
 
             if Window.IsOpen then 
@@ -6513,22 +6612,6 @@ local Library do
 
     Library.CreateSettingsPage = function(self, Window, Watermark, KeybindList)
         local SettingsPage = Window:Page({Name = "Settings", SubPages = true}) do 
-            local ThemingSubPage = SettingsPage:SubPage({Name = "Theming", Columns = 2}) do 
-                local ThemesSection = ThemingSubPage:Section({Name = "Themes", Side = 1}) do
-                    for Index, Value in Library.Theme do 
-                        ThemesSection:Label(Index):Colorpicker({
-                            Name = Index,
-                            Flag = Index.."Theme",
-                            Default = Value,
-                            Callback = function(Value)
-                                Library.Theme[Index] = Value
-                                Library:ChangeTheme(Index, Value)
-                            end
-                        })
-                    end
-                end
-            end
-
             local ConfigsSubPage = SettingsPage:SubPage({Name = "Configs", Columns = 2}) do 
                 local ConfigsSection = ConfigsSubPage:Section({Name = "Configs", Side = 1}) do
                     local ConfigName
@@ -6620,50 +6703,6 @@ local Library do
                         Default = true,
                         Callback = function(Value)
                             KeybindList:SetVisibility(Value)
-                        end
-                    })
-
-                    SettingsSection:Slider({
-                        Name = "Fade time",
-                        Flag = "FadeTime",
-                        Default = Library.FadeSpeed,
-                        Min = 0,
-                        Max = 1,
-                        Decimals = 0.01,
-                        Callback = function(Value)
-                            Library.FadeSpeed = Value
-                        end
-                    })
-
-                    SettingsSection:Slider({
-                        Name = "Tween time",
-                        Flag = "TweenTime",
-                        Default = Library.Tween.Time,
-                        Min = 0,
-                        Max = 1,
-                        Decimals = 0.01,
-                        Callback = function(Value)
-                            Library.Tween.Time = Value
-                        end
-                    })
-
-                    SettingsSection:Dropdown({
-                        Name = "Tween style",
-                        Flag = "Tween style",
-                        Items = { "Linear", "Quad", "Quart", "Back", "Bounce", "Circular", "Cubic", "Elastic", "Exponential", "Sine", "Quint" },
-                        Default = "Cubic",
-                        Callback = function(Value)
-                            Library.Tween.Style = Enum.EasingStyle[Value]
-                        end
-                    })
-
-                    SettingsSection:Dropdown({
-                        Name = "Tween direction",
-                        Flag = "Tween direction",
-                        Items = { "In", "Out", "InOut" },
-                        Default = "Out",
-                        Callback = function(Value)
-                            Library.Tween.Direction = Enum.EasingDirection[Value]
                         end
                     })
 
