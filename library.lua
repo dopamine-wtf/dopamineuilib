@@ -1306,6 +1306,38 @@ local Library do
                 end
 
                 Items["UIStroke"] = Items["Window"]:Border("Outline")
+
+                Items["DiscordButton"] = Instances:Create("TextButton", {
+                    Parent = Items["Window"].Instance,
+                    Name = "\0",
+                    FontFace = Library.Font,
+                    Text = "Discord",
+                    TextColor3 = FromRGB(235, 235, 235),
+                    TextSize = 13,
+                    TextScaled = false,
+                    BackgroundColor3 = FromRGB(88, 101, 242),
+                    BackgroundTransparency = 0.65,
+                    BorderColor3 = FromRGB(12, 12, 12),
+                    BorderSizePixel = 2,
+                    AutoButtonColor = false,
+                    Size = UDim2New(0, 85, 0, 28),
+                    Position = UDim2New(1, -10, 1, -8),
+                    AnchorPoint = Vector2New(1, 1),
+                    ZIndex = 10
+                })  Items["DiscordButton"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Border"})
+
+                Items["DiscordStroke"] = Instances:Create("UIStroke", {
+                    Parent = Items["DiscordButton"].Instance,
+                    Name = "\0",
+                    Color = FromRGB(61, 60, 65),
+                    Transparency = 0.6,
+                    LineJoinMode = Enum.LineJoinMode.Miter,
+                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                })  Items["DiscordStroke"]:AddToTheme({Color = "Outline"})
+
+                Items["DiscordButton"].Instance.MouseButton1Click:Connect(function()
+                    pcall(function() setclipboard("https://discord.gg/VJXXXd5UzP") end)
+                end)
             end
 
             return Items
